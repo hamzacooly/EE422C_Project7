@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox id="buttons_box" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="500.0">
@@ -35,9 +34,12 @@
             </Button>
          </children>
       </HBox>
-      <ScrollPane id="stories_pane" prefHeight="125.0" prefWidth="500.0">
+      <ScrollPane id="stories_pane" prefHeight="125.0" prefWidth="500.0" vbarPolicy="NEVER">
          <content>
-            <HBox id="stories_box" prefHeight="125.0" prefWidth="500.0" />
+            <HBox id="stories_box" prefHeight="125.0" prefWidth="500.0">
+               <children>
+                  <Button id="story_add_butt" mnemonicParsing="false" prefHeight="110.0" prefWidth="80.0" text="Add Story" />
+               </children></HBox>
          </content>
       </ScrollPane>
       <ListView id="chat_list" prefHeight="425.0" prefWidth="500.0" />
