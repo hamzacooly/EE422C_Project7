@@ -1,4 +1,4 @@
-package server;
+package assignment7;
 
 import java.util.Observable;
 
