@@ -1,5 +1,6 @@
 package assignment7;
 
+
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
@@ -16,6 +17,7 @@ import java.util.Observer;
 public class ClientMain extends Application implements Observer {
 	private BufferedReader reader;
 	private PrintWriter writer;
+
 
 	@Override
 	public void update(Observable server, Object obj) {
@@ -54,6 +56,7 @@ public class ClientMain extends Application implements Observer {
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Chat Client");
 		primaryStage.show();
+
 	}
 
 }
