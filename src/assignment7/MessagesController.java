@@ -53,7 +53,7 @@ public class MessagesController implements Initializable {
                 String name = name_text.getText();
                 //message: [chatname], [sender], [message]
                 writer.println("sendmsg");
-                writer.println(chatname);
+                writer.println(name);
                 writer.println(ClientMain.user);
                 writer.println(msg);
                 writer.println("END");
@@ -68,7 +68,7 @@ public class MessagesController implements Initializable {
             String name = name_text.getText();
             //message: [chatname], [sender], [message]
             writer.println("sendmsg");
-            writer.println(chatname);
+            writer.println(name);
             writer.println(ClientMain.user);
             writer.println(msg);
             writer.println("END");

@@ -53,6 +53,30 @@ public class ClientMain extends Application implements Observer {
 			stage.setScene(scene);
 			writer.println("getchats");
 			writer.println(user);
+			writer.println("END");
+			writer.flush();
+		}
+	};
+
+	Runnable updateScene2 = new Runnable() {
+		@Override
+		public void run() {
+			//Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+			FXMLLoader loader2 = new FXMLLoader(getClass().getResource("chatUIMessages.fxml"));
+			Parent root2 = null;
+			try {
+				root2 = loader2.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			MessagesController M = loader2.getController();
+			M.setStreams(ClientMain.reader, ClientMain.writer);
+			//M.chatname = ((Text) o).getText();
+			Scene scene2 = new Scene(root2);
+			stage.setScene(scene2);
+			writer.println("getchathistory");
+			writer.println(M.chatname);
+			writer.println("END");
 			writer.flush();
 		}
 	};
@@ -105,9 +129,9 @@ public class ClientMain extends Application implements Observer {
 
 	}
 
-//	public String getIncoming(){
-//		return incoming;
-//	}
+	public String getIncoming(){
+		return incoming;
+	}
 
 	public void parseMessage(String msg){
 		String[] tokens = msg.split("\n");
@@ -128,13 +152,26 @@ public class ClientMain extends Application implements Observer {
 		else if (tokens[0].equals("chats")){
 			int i = 1;
 			while (!tokens[i].equals(user)) {
-				ClientController.chat_list.getChildrenUnmodifiable().add(new Text(tokens[i]));
+				Text t = new Text(tokens[i]);
+				t.setOnMouseClicked((event) -> {
+					Platform.runLater(updateScene2);
+				});
+				ClientController.chat_list.getChildrenUnmodifiable().add(t);
 				chat_list.add(new Chat(tokens[i]));
 				i++;
 			}
 		}
 		else if (tokens[0].equals("newmsg")){
 			MessagesController.message_list.getChildrenUnmodifiable().add(new Text(tokens[2]));
+		}
+
+		else if (tokens[0].equals("newchat")){
+			MessagesController.name_text.setText(tokens[1]);
+			Text newT = new Text(tokens[1]);
+			newT.setOnMouseClicked((event) -> {
+				Platform.runLater(updateScene2);
+			});
+			ClientController.chat_list.getChildrenUnmodifiable().add(newT);
 		}
 	}
 }
