@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1"
+fx:controller="assignment7.ClientController">
+   <children>
+      <HBox fx:id="buttons_box" alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="500.0">
+         <children>
+            <TextField fx:id="search_text" prefHeight="30.0" prefWidth="200.0" promptText="Search">
+
+               <HBox.margin>
+                  <Insets left="15.0" />
+               </HBox.margin>
+            </TextField>
+
+            <Button fx:id="search_butt" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="Button">
+
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+
+            <Button fx:id="new_chat_butt" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="Button">
+
+               <HBox.margin>
+                  <Insets left="75.0" />
+               </HBox.margin>
+            </Button>
+
+            <Button fx:id="settings_butt" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" text="Button">
+
+               <HBox.margin>
+                  <Insets left="75.0" />
+               </HBox.margin>
+            </Button>
+         </children>
+      </HBox>
+
+      <ScrollPane fx:id="stories_pane" prefHeight="125.0" prefWidth="500.0" vbarPolicy="NEVER">
+         <content>
+            <HBox fx:id="stories_box" prefHeight="125.0" prefWidth="500.0">
+               <children>
+                  <Button id="story_add_butt" fx:id="story_add_butt" mnemonicParsing="false" prefHeight="110.0" prefWidth="80.0" text="Add Story" />
+               </children></HBox>
+         </content>
+      </ScrollPane>
+      <ListView fx:id="chat_list" prefHeight="425.0" prefWidth="500.0" />
+      <HBox fx:id="tabs_box" prefHeight="100.0" prefWidth="500.0">
+         <children>
+            <Button fx:id="messages_tab" mnemonicParsing="false" prefHeight="100.0" prefWidth="167.0" text="Messages" />
+            <Button fx:id="groups_tab" mnemonicParsing="false" prefHeight="100.0" prefWidth="166.0" text="Groups" />
+            <Button fx:id="friends_tab" mnemonicParsing="false" prefHeight="100.0" prefWidth="167.0" text="Friends" />
+
+         </children>
+      </HBox>
+   </children>
+</VBox>

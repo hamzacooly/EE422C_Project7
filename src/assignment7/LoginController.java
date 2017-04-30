@@ -49,12 +49,14 @@ public class LoginController implements Initializable {
             writer.println("newuser");
             writer.println(userString);
             writer.println(passString);
+            writer.println("END");
+            writer.flush();
             try {
                 Thread.sleep(5);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
-            validateLogin(event);
+            //validateLogin(event);
         });
 
         login_butt.setOnAction((event) -> {
@@ -64,12 +66,15 @@ public class LoginController implements Initializable {
             writer.println("login");
             writer.println(userString);
             writer.println(passString);
+            writer.println("END");
+            writer.flush();
+            ClientMain.user = userString;
             try {
-                Thread.sleep(5);
+                Thread.sleep(10);
             } catch (InterruptedException e){
                 e.printStackTrace();
             }
-            validateLogin(event);
+            //validateLogin(event);
         });
 
     }
@@ -82,16 +87,25 @@ public class LoginController implements Initializable {
     public void validateLogin (ActionEvent event) {
         //if invalid: print invalid text
         //else go to main screen
-        String response = null;
-        String line;
-        try {
-            while ((line = reader.readLine()) != null) {
-                response = line;
+        System.out.println("Ready to read.");
+
+            String line;
+            String response = "";
+            try {
+                while (!(line = reader.readLine()).equals("END")) {
+                    response += line;
+                }
+            } catch(IOException e){
+                e.printStackTrace();
             }
-        } catch (IOException e){
-            e.printStackTrace();
-        }
-        if (response.equals("success")){
+            loginResponse(response, event);
+
+
+
+    }
+    public void loginResponse(String response, ActionEvent event){
+        String[] tokens = response.split("\n");
+        if (tokens[0].equals("success")){
             Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("chatUIMain.fxml"));
             Parent root = null;
@@ -105,10 +119,12 @@ public class LoginController implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
         }
-        else if (response.equals("failure")){
+        else if (tokens[0].equals("failure")){
             invalid_text.setText("Invalid login. Please try again.");
         }
-
+    }
+    public Text getInvalidText(){
+        return invalid_text;
     }
 }
 
