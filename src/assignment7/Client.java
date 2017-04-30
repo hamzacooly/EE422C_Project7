@@ -6,10 +6,6 @@ import java.util.Observer;
 /**
  * Created by Ali Kedwaii on 4/29/2017.
  */
-public class Client implements Observer {
+public class Client {
 
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
 }

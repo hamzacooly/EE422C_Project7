@@ -26,17 +26,19 @@ public class MessagesController implements Initializable {
 
     private BufferedReader reader;
     private PrintWriter writer;
+    public Chat chat;
+    public String chatname;
 
     @FXML
     private Button back_butt;
     @FXML
-    private TextArea name_text;
+    public static TextArea name_text;
     @FXML
     private TextField msg_field;
     @FXML
     private Button send_butt;
     @FXML
-    private ListView message_list;
+    public static ListView message_list;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -50,6 +52,12 @@ public class MessagesController implements Initializable {
                 String msg = msg_field.getText();
                 String name = name_text.getText();
                 //message: [chatname], [sender], [message]
+                writer.println("sendmsg");
+                writer.println(chatname);
+                writer.println(ClientMain.user);
+                writer.println(msg);
+                writer.println("END");
+                writer.flush();
             }
         });
 
@@ -58,7 +66,13 @@ public class MessagesController implements Initializable {
             //send to server via stream
             String msg = msg_field.getText();
             String name = name_text.getText();
-            //message: [chatname], [user], [message]
+            //message: [chatname], [sender], [message]
+            writer.println("sendmsg");
+            writer.println(chatname);
+            writer.println(ClientMain.user);
+            writer.println(msg);
+            writer.println("END");
+            writer.flush();
         });
 
         back_butt.setOnAction((event) -> {

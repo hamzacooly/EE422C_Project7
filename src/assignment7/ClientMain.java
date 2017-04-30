@@ -2,28 +2,60 @@ package assignment7;
 
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Node;
+import javafx.scene.control.TextArea;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.fxml.FXMLLoader;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 public class ClientMain extends Application implements Observer {
-	private BufferedReader reader;
-	private PrintWriter writer;
-
+	private static BufferedReader reader;
+	private static PrintWriter writer;
+	public static String user;
+	private String incoming;
+	private Stage stage;
+	private ArrayList<Chat> chat_list;
 
 	@Override
-	public void update(Observable server, Object obj) {
+	public void update(Observable chat, Object obj) {
 		// TODO Auto-generated method stub
+
+
 		
 	}
+
+	Runnable updateScene1 = new Runnable() {
+
+		@Override
+		public void run() {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("chatUIMain.fxml"));
+			Parent root = null;
+			try {
+				root = fxmlLoader.load();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			ClientController C = fxmlLoader.getController();
+			C.setStreams(ClientMain.reader, ClientMain.writer);
+			Scene scene = new Scene(root);
+			stage.setScene(scene);
+			writer.println("getchats");
+			writer.println(user);
+			writer.flush();
+		}
+	};
 
 	public static void main (String[] args) {
 		// TODO Auto-generated method stub
@@ -37,7 +69,20 @@ public class ClientMain extends Application implements Observer {
 		reader = new BufferedReader(streamReader);
 		writer = new PrintWriter(socket.getOutputStream());
 		//new thread
-
+		(new Thread (() -> {
+			String message;
+			try {
+				while(true) {
+					incoming = "";
+					while (!(message = reader.readLine()).equals("END")) {
+						incoming += message + "\n";
+					}
+					parseMessage(incoming);
+				}
+			} catch(IOException e){
+				e.printStackTrace();
+			}
+		})).start();
 		//thread start
 	}
 
@@ -48,6 +93,7 @@ public class ClientMain extends Application implements Observer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		stage = primaryStage;
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("chatUILogin.fxml"));
 		Parent root = loader.load();
 		LoginController L = loader.getController();
@@ -59,4 +105,36 @@ public class ClientMain extends Application implements Observer {
 
 	}
 
+//	public String getIncoming(){
+//		return incoming;
+//	}
+
+	public void parseMessage(String msg){
+		String[] tokens = msg.split("\n");
+		if (tokens[0].equals("success")){
+			//Stage stage = (Stage)label.getScene().getWindow();
+			Platform.runLater(updateScene1);
+		}
+		else if (tokens[0].equals("failure")){
+			//Text t = L.getInvalidText().setText("Invalid login. Please try again.");
+		}
+		else if (tokens[0].equals("msg")){
+			int i = 1;
+			while (!tokens[i].equals(user)) {
+				MessagesController.message_list.getChildrenUnmodifiable().add(new Text(tokens[i]));
+				i++;
+			}
+		}
+		else if (tokens[0].equals("chats")){
+			int i = 1;
+			while (!tokens[i].equals(user)) {
+				ClientController.chat_list.getChildrenUnmodifiable().add(new Text(tokens[i]));
+				chat_list.add(new Chat(tokens[i]));
+				i++;
+			}
+		}
+		else if (tokens[0].equals("newmsg")){
+			MessagesController.message_list.getChildrenUnmodifiable().add(new Text(tokens[2]));
+		}
+	}
 }
