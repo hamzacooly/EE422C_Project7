@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import static assignment7.ClientController.chat_list;
+import static assignment7.ClientController.chatnames;
+
 public class ClientMain extends Application {
 	private static BufferedReader reader;
 	private static PrintWriter writer;
@@ -146,8 +149,12 @@ public class ClientMain extends Application {
 		else if (tokens[0].equals("getchats")){
 			int i = 1;
 			while (i < tokens.length) {
-				if (!ClientController.chatnames.contains(tokens[i]))
-					ClientController.chatnames.add(tokens[i]);
+				Text t = new Text(tokens[i]);
+				t.setOnMouseClicked((event) -> {
+					Platform.runLater(updateScene2);
+				});
+				if (!chatnames.contains(t))
+					chatnames.add(t);
 				i++;
 			}
 			ClientController.chat_list.setItems(ClientController.chatnames);
@@ -161,7 +168,11 @@ public class ClientMain extends Application {
 
 		else if (tokens[0].equals("newchat")){
 			MessagesController.name_text.setText(tokens[1]);
-			ClientController.chatnames.add(tokens[1]);
+			Text t = new Text(tokens[1]);
+			t.setOnMouseClicked((event) -> {
+				Platform.runLater(updateScene2);
+			});
+			chatnames.add(t);
 		}
 	}
 }
