@@ -245,7 +245,7 @@ public class ServerMain{
 					Document d = chats_collection.find(eq("chat_name", chat)).first();
 					List<Document> messages = (List<Document>) d.get("messages");
 					for(Document p : messages){
-						writer.println(p.get("user") + ":" + p.get("msg"));
+						writer.println(p.get("user") + ":\t" + p.get("msg"));
 					}
 					break;
 				}

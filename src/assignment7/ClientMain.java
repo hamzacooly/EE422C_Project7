@@ -139,6 +139,7 @@ public class ClientMain extends Application {
 		}
 		else if (tokens[0].equals("getchathistory")){
 			int i = 1;
+			MessagesController.messages.clear();
 			while (i < tokens.length) {
 				if (!MessagesController.messages.contains(tokens[i]))
 					MessagesController.messages.add(tokens[i]);

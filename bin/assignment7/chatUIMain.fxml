@@ -52,7 +52,9 @@ fx:controller="assignment7.ClientController">
                </children></HBox>
          </content>
       </ScrollPane>
-      <ListView fx:id="chat_list" prefHeight="425.0" prefWidth="500.0" />
+      <ListView fx:id="chat_list" prefHeight="425.0" prefWidth="500.0" >
+
+      </ListView>
       <HBox fx:id="tabs_box" prefHeight="100.0" prefWidth="500.0">
          <children>
             <Button fx:id="messages_tab" mnemonicParsing="false" prefHeight="100.0" prefWidth="167.0" text="Messages" />

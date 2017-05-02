@@ -70,23 +70,25 @@ public class ClientController implements Initializable {
     	
     	chat_list.setOnMouseClicked((event)->{
     		Text t = chat_list.getSelectionModel().getSelectedItem();
-    		writer.println("getchathistory");
-    		writer.println(t.getText());
-    		writer.println("END");
-    		writer.flush();
-			Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-            FXMLLoader loader2 = new FXMLLoader(getClass().getResource("chatUIMessages.fxml"));
-            Parent root2 = null;
-            try {
-                root2 = loader2.load();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            MessagesController M = loader2.getController();
-            M.setStreams(this.reader, this.writer);
-            M.setChatname(t.getText());
-            Scene scene2 = new Scene(root2);
-            stage.setScene(scene2);
+    		if(chatnames.contains(t)){
+    			writer.println("getchathistory");
+	    		writer.println(t.getText());
+	    		writer.println("END");
+	    		writer.flush();
+				Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+	            FXMLLoader loader2 = new FXMLLoader(getClass().getResource("chatUIMessages.fxml"));
+	            Parent root2 = null;
+	            try {
+	                root2 = loader2.load();
+	            } catch (IOException e) {
+	                e.printStackTrace();
+	            }
+	            MessagesController M = loader2.getController();
+	            M.setStreams(this.reader, this.writer);
+	            M.setChatname(t.getText());
+	            Scene scene2 = new Scene(root2);
+	            stage.setScene(scene2);
+    		}
     	});
 
         new_chat_butt.setOnAction((event) -> {

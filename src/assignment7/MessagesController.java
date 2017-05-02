@@ -14,10 +14,13 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -78,8 +81,14 @@ public class MessagesController implements Initializable {
         });
 
         send_butt.setOnAction((event) -> {
-            //get text
+            //play music
+        	//get text
             //send to server via stream
+        	String musicFile = "credulous.mp3";
+        	Media sound = new Media(new File(musicFile).toURI().toString());
+        	MediaPlayer mediaPlayer = new MediaPlayer(sound);
+        	mediaPlayer.play();
+        	
             String msg = msg_field.getText();
             String name = name_text.getText();
             //message: [chatname], [sender], [message]
