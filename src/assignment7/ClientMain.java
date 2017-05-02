@@ -87,7 +87,7 @@ public class ClientMain extends Application {
 	}
 
 	private void setUpNetworking() throws Exception {
-		Socket socket = new Socket("127.0.0.1", 12017); //IP, Port
+		Socket socket = new Socket("10.146.225.1", 12017); //IP, Port
 		InputStreamReader streamReader = new InputStreamReader(socket.getInputStream());
 		reader = new BufferedReader(streamReader);
 		writer = new PrintWriter(socket.getOutputStream());
