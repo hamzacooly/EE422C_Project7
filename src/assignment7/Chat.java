@@ -10,7 +10,7 @@ public class Chat extends Observable {
 	}
 	
 	public void notify(String msg){
-		System.out.println("server read " + msg);
+		System.out.println("server read: " + msg);
 		setChanged();
 		notifyObservers(msg);
 	}

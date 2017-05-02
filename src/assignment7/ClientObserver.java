@@ -12,10 +12,23 @@ public class ClientObserver implements Observer {
 		this.writer = writer;
 		user = u;
 	}
+	
+	public ClientObserver(String u){
+		user = u;
+		writer = null;
+	}
+	
+	public void setWriter(PrintWriter writer) {
+		this.writer = writer;
+	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
+		if(writer == null)
+			return;
+		System.out.println("Sending msg " + arg1.toString());
 		writer.println(arg1);
+		writer.println("END");
 		writer.flush();
 	}
 

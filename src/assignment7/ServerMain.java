@@ -22,8 +22,8 @@ public class ServerMain{
 	MongoCollection<Document> chats_collection;
 	ServerSocket server;
 	Socket socket;
-	List<Chat> chats;
-	private List<ClientObserver> users;
+	List<Chat> chats = new ArrayList<Chat>();
+	private List<ClientObserver> users = new ArrayList<>();
 	
 
 	public static void main(String[] args) {				
@@ -73,6 +73,7 @@ public class ServerMain{
 				while(!(message = reader.readLine()).equals("EXIT")){
 					String command = "";
 					command += message + "\n";
+					System.out.println("Server read " + message);
 					while (!(message = reader.readLine()).equals("END")) {
 						System.out.println("Server read " + message);
 						command += message + "\n";
@@ -83,11 +84,6 @@ public class ServerMain{
 				e.printStackTrace();
 			}
 		}
-	}
-	
-	public void updateChat(String msg, String chatID){
-		Document d = (Document) chats_collection.find(eq("chat_name", chatID));
-		
 	}
 	
 	public void addChat(Chat chat){
@@ -109,9 +105,23 @@ public class ServerMain{
 		Document d = new Document();
 		d.append("username", user);
 		d.append("pwd", pass);
-		List<Document> arr = new ArrayList<Document>();
+		List<String> arr = new ArrayList<String>();
 		d.append("chats", arr);
 		chats_collection.insertOne(d);
+	}
+	
+	public void addChatToDB(String chatname, ArrayList<String> users){
+		Document d = new Document();
+		d.append("chat_name", chatname);
+		d.append("users", users);
+		List<Document> arr = new ArrayList<Document>();
+		d.append("messages", arr);
+		chats_collection.insertOne(d);
+	}
+	
+	public void addMsgToChat(String chatname, String user, String msg){
+		chats_collection.updateOne(eq("chat_name", chatname), 
+				new Document("$push", new Document("messages", new Document("user", user).append("msg", msg))));
 	}
 	
 	public void parseCommand(String cmd, PrintWriter writer){
@@ -130,6 +140,8 @@ public class ServerMain{
 			else{
 				System.out.println("Successful!");
 				addUserToDB(username, password);
+				ClientObserver p = new ClientObserver(writer, username);
+				users.add(p);
 				writer.println("success");
 				writer.println("END");
 				writer.flush();
@@ -143,11 +155,17 @@ public class ServerMain{
 				FindIterable<Document> d = chats_collection.find(eq("username", username));
 				Document doc = d.first();
 				List<String> chats1 = (List<String>) doc.get("chats");
+				ClientObserver p = null; // Note that the user should already be in the users array
+				for(int k = 0; k < users.size(); k++){
+					if(users.get(k).getUser().equals(username)){
+						p = users.get(k);
+						break;
+					}
+				}
+				p.setWriter(writer);
 				for(Chat c : chats){
-					if(chats.contains(c.getName())){
-						ClientObserver p = new ClientObserver(writer, username);
+					if(chats1.contains(c.getName())){
 						c.addObserver(p);
-						users.add(p);
 					}
 				}
 				writer.println("success");
@@ -163,10 +181,9 @@ public class ServerMain{
 		}
 		else if(tokens[0].equals("getchats")){
 			String user = tokens[1];
-			FindIterable<Document> d = chats_collection.find(eq("username", user));
-			Document doc = d.first();
-			writer.println("printchats");
-			List<String> chats1 = (List<String>) doc.get("chats");
+			Document d = chats_collection.find(eq("username", user)).first();
+			writer.println("getchats");
+			List<String> chats1 = (List<String>) d.get("chats");
 			for(String c : chats1){
 				writer.println(c);
 			}
@@ -175,7 +192,10 @@ public class ServerMain{
 		}
 		else if(tokens[0].equals("newchat")){
 			Chat c = new Chat(tokens[1]);
+			addChat(c);
+			ArrayList<String> usrs = new ArrayList<>();
 			for(int k = 2; k < tokens.length; k++){
+				usrs.add(tokens[k]);
 				for(ClientObserver p : users){
 					if(p.getUser().equals(tokens[k])){
 						c.addObserver(p);
@@ -183,30 +203,33 @@ public class ServerMain{
 					}
 				}
 			}
-			chats.add(c);
+			c.notify("newchat\n" + tokens[1]);
+			addChatToDB(c.getName(), usrs);
 		}
 		else if(tokens[0].equals("getchathistory")){
 			String chat = tokens[1];
-			writer.println("msg");
+			writer.println("getchathistory");
 			for(Chat c : chats){
 				if(c.getName().equals(chat)){
-					FindIterable<Document> d = chats_collection.find(eq("chat_name", chat));
-					Document doc = d.first();
-					Map<String, String> msgs = (Map<String, String>) doc.get("messages");
-					for(String k : msgs.keySet()){
-						writer.println("k:" + msgs.get(k));
+					Document d = chats_collection.find(eq("chat_name", chat)).first();
+					List<Document> messages = (List<Document>) d.get("messages");
+					for(Document p : messages){
+						writer.println(p.get("msg"));
 					}
 					break;
 				}
 			}
+			writer.println("END");
 			writer.flush();
 		}
 		else if(tokens[0].equals("sendmsg")){
 			for(Chat c : chats){
 				if(c.getName().equals(tokens[1])){
-					c.notify(tokens[2] + tokens[3]);
+					System.out.println("Chat found: " + c.getName());
+					c.notify("sendmsg\n" + tokens[1] + "\n" + tokens[2] + "\n" + tokens[3]);
+					addMsgToChat(tokens[1], tokens[2], tokens[3]);
+					break;
 				}
-				break;
 			}
 		}
 	}
@@ -221,12 +244,20 @@ public class ServerMain{
 		chats_collection = db.getCollection("Chats");
 		System.out.println("There are " + chats_collection.count() + " documents");
 		MongoCursor<Document> cursor = chats_collection.find(exists("chat_name")).iterator();
+		MongoCursor<Document> cursor2 = chats_collection.find(exists("username")).iterator();
+
 		try {
 		    while (cursor.hasNext()) {
 		    	Document x = cursor.next();
 		    	Chat chat = new Chat(x.get("chat_name").toString());
 		    	chats.add(chat);
 		        System.out.println(x.toJson());
+		    }
+		    while(cursor2.hasNext()){
+		    	Document x = cursor.next();
+		    	ClientObserver p = new ClientObserver(x.getString("username"));
+		    	users.add(p);
+		    	System.out.println(x.toJson());
 		    }
 		} finally {
 		    cursor.close();
