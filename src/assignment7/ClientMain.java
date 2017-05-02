@@ -161,12 +161,21 @@ public class ClientMain extends Application {
 		}
 		else if (tokens[0].equals("sendmsg")){
 			String mes = tokens[2] + ": " + tokens[3];
-			MessagesController.messages.add(mes);
+			Platform.runLater(new Runnable() {
+			    public void run() {
+			    	MessagesController.messages.add(mes);
+			    }
+			});
 		}
 
 		else if (tokens[0].equals("newchat")){
 			Text t = new Text(tokens[1]);
-			ClientController.chatnames.add(t);
+			Platform.runLater(new Runnable() {
+			    public void run() {
+			    	ClientController.chatnames.add(t);
+			    }
+			});
+			
 		}
 	}
 }
