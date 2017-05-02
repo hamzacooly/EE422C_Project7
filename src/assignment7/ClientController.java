@@ -1,5 +1,6 @@
 package assignment7;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -25,6 +26,7 @@ public class ClientController implements Initializable {
 
     private BufferedReader reader;
     private PrintWriter writer;
+    public static ObservableList<String> chatnames;
 
 
     @FXML
@@ -94,28 +96,28 @@ public class ClientController implements Initializable {
             //search
         });
 
-//        chat_list.setOnMouseClicked((event) -> {
-//            Object o = chat_list.getSelectionModel().getSelectedItem();
-//            //get data from item
-//            //new scene
-//            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
-//            FXMLLoader loader2 = new FXMLLoader(getClass().getResource("chatUIMessages.fxml"));
-//            Parent root2 = null;
-//            try {
-//                root2 = loader2.load();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            MessagesController M = loader2.getController();
-//            M.setStreams(this.reader, this.writer);
-//            M.chatname = ((Text) o).getText();
-//            Scene scene2 = new Scene(root2);
-//            stage.setScene(scene2);
-//            writer.println("getchathistory");
-//            writer.println(M.chatname);
-//            writer.println("END");
-//            writer.flush();
-//        });
+        chat_list.setOnMouseClicked((event) -> {
+            Object o = chat_list.getSelectionModel().getSelectedItem();
+            //get data from item
+            //new scene
+            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            FXMLLoader loader2 = new FXMLLoader(getClass().getResource("chatUIMessages.fxml"));
+            Parent root2 = null;
+            try {
+                root2 = loader2.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            MessagesController M = loader2.getController();
+            M.setStreams(this.reader, this.writer);
+            M.chatname = ((String) o);
+            Scene scene2 = new Scene(root2);
+            stage.setScene(scene2);
+            writer.println("getchathistory");
+            writer.println(M.chatname);
+            writer.println("END");
+            writer.flush();
+        });
 
         messages_tab.setOnAction((event) -> {
             //swap list

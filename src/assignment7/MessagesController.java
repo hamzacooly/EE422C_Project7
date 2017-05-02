@@ -1,5 +1,6 @@
 package assignment7;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -26,8 +27,8 @@ public class MessagesController implements Initializable {
 
     private BufferedReader reader;
     private PrintWriter writer;
-    public Chat chat;
     public String chatname;
+    public static ObservableList<String> messages;
 
     @FXML
     private Button back_butt;

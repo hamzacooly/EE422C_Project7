@@ -20,21 +20,13 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class ClientMain extends Application implements Observer {
+public class ClientMain extends Application {
 	private static BufferedReader reader;
 	private static PrintWriter writer;
 	public static String user;
 	private String incoming;
 	private Stage stage;
-	private ArrayList<Chat> chat_list;
 
-	@Override
-	public void update(Observable chat, Object obj) {
-		// TODO Auto-generated method stub
-
-
-		
-	}
 
 	Runnable updateScene1 = new Runnable() {
 
@@ -71,7 +63,7 @@ public class ClientMain extends Application implements Observer {
 			}
 			MessagesController M = loader2.getController();
 			M.setStreams(ClientMain.reader, ClientMain.writer);
-			//M.chatname = ((Text) o).getText();
+			//M.chatname = ((String) o);
 			Scene scene2 = new Scene(root2);
 			stage.setScene(scene2);
 			writer.println("getchathistory");
@@ -88,7 +80,7 @@ public class ClientMain extends Application implements Observer {
 	}
 
 	private void setUpNetworking() throws Exception {
-		Socket socket = new Socket("10.147.119.215", 12017); //IP, Port
+		Socket socket = new Socket("10.145.167.57", 12017); //IP, Port
 		InputStreamReader streamReader = new InputStreamReader(socket.getInputStream());
 		reader = new BufferedReader(streamReader);
 		writer = new PrintWriter(socket.getOutputStream());
@@ -142,36 +134,34 @@ public class ClientMain extends Application implements Observer {
 		else if (tokens[0].equals("failure")){
 			//Text t = L.getInvalidText().setText("Invalid login. Please try again.");
 		}
-		else if (tokens[0].equals("msg")){
+		else if (tokens[0].equals("getchathistory")){
 			int i = 1;
-			while (!tokens[i].equals(user)) {
-				MessagesController.message_list.getChildrenUnmodifiable().add(new Text(tokens[i]));
+			while (i < tokens.length) {
+				if (!MessagesController.messages.contains(tokens[i]))
+					MessagesController.messages.add(tokens[i]);
 				i++;
 			}
+			MessagesController.message_list.setItems(MessagesController.messages);
 		}
-		else if (tokens[0].equals("chats")){
+		else if (tokens[0].equals("getchats")){
 			int i = 1;
-			while (!tokens[i].equals(user)) {
-				Text t = new Text(tokens[i]);
-				t.setOnMouseClicked((event) -> {
-					Platform.runLater(updateScene2);
-				});
-				ClientController.chat_list.getChildrenUnmodifiable().add(t);
-				chat_list.add(new Chat(tokens[i]));
+			while (i < tokens.length) {
+				if (!ClientController.chatnames.contains(tokens[i]))
+					ClientController.chatnames.add(tokens[i]);
 				i++;
 			}
+			ClientController.chat_list.setItems(ClientController.chatnames);
 		}
 		else if (tokens[0].equals("newmsg")){
-			MessagesController.message_list.getChildrenUnmodifiable().add(new Text(tokens[2]));
+			String mes = tokens[2] + ": " + tokens[3];
+			MessagesController.messages.add(mes);
+			MessagesController.message_list.setItems(MessagesController.messages);
+
 		}
 
 		else if (tokens[0].equals("newchat")){
 			MessagesController.name_text.setText(tokens[1]);
-			Text newT = new Text(tokens[1]);
-			newT.setOnMouseClicked((event) -> {
-				Platform.runLater(updateScene2);
-			});
-			ClientController.chat_list.getChildrenUnmodifiable().add(newT);
+			ClientController.chatnames.add(tokens[1]);
 		}
 	}
 }
