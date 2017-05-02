@@ -38,8 +38,14 @@ public class ServerMain{
 	
 	public void run() throws Exception{
 		chats = new ArrayList<Chat>();
+		URL whatismyip = new URL("http://checkip.amazonaws.com");
+		BufferedReader in = new BufferedReader(new InputStreamReader(
+		                whatismyip.openStream()));
+
+		String ip_pub = in.readLine(); //you get the IP as a String
+		System.out.println("Public IP is: " + ip_pub);
 		String ip = InetAddress.getLocalHost().getHostAddress().toString();
-		System.out.println("Server IP is: " + ip);
+		System.out.println("Local IP is: " + ip);
 		server = new ServerSocket(12017);
 		setupDB(ip);
 		getDBHistory();
@@ -254,7 +260,7 @@ public class ServerMain{
 		        System.out.println(x.toJson());
 		    }
 		    while(cursor2.hasNext()){
-		    	Document x = cursor.next();
+		    	Document x = cursor2.next();
 		    	ClientObserver p = new ClientObserver(x.getString("username"));
 		    	users.add(p);
 		    	System.out.println(x.toJson());
