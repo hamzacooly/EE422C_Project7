@@ -1,5 +1,7 @@
 package assignment7;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,7 +28,7 @@ public class ClientController implements Initializable {
 
     private BufferedReader reader;
     private PrintWriter writer;
-    public static ObservableList<Text> chatnames;
+    public static ObservableList<Text> chatnames = FXCollections.observableArrayList();
 
 
     @FXML
@@ -44,7 +46,7 @@ public class ClientController implements Initializable {
     @FXML
     private Button story_add_butt;
     @FXML
-    public static ListView chat_list;
+    private ListView<Text> chat_list;
     @FXML
     private Button messages_tab;
     @FXML
@@ -55,6 +57,37 @@ public class ClientController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	
+    	chat_list.setItems(chatnames);
+    	
+    	chatnames.addListener(new ListChangeListener<Text>(){
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends Text> c) {
+				// TODO Auto-generated method stub
+				chat_list.setItems(chatnames);
+			}
+    	});
+    	
+    	chat_list.setOnMouseClicked((event)->{
+    		Text t = chat_list.getSelectionModel().getSelectedItem();
+    		writer.println("getchathistory");
+    		writer.println(t.getText());
+    		writer.println("END");
+    		writer.flush();
+			Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+            FXMLLoader loader2 = new FXMLLoader(getClass().getResource("chatUIMessages.fxml"));
+            Parent root2 = null;
+            try {
+                root2 = loader2.load();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            MessagesController M = loader2.getController();
+            M.setStreams(this.reader, this.writer);
+            M.setChatname(t.getText());
+            Scene scene2 = new Scene(root2);
+            stage.setScene(scene2);
+    	});
 
         new_chat_butt.setOnAction((event) -> {
             //dialog box
@@ -64,8 +97,10 @@ public class ClientController implements Initializable {
             d.showAndWait().ifPresent(val -> {
                 String[] ppl = d.getEditor().getText().split(" ");
                 writer.println("newchat");
-                for (String s: ppl){
-                    writer.println(s);
+                writer.println(ppl[0]);
+                writer.println(ClientMain.user);
+                for(int k = 1; k < ppl.length; k++){
+                	writer.println(ppl[k]);
                 }
                 writer.println("END");
                 writer.flush();
@@ -79,7 +114,7 @@ public class ClientController implements Initializable {
                 }
                 MessagesController M = loader2.getController();
                 M.setStreams(this.reader, this.writer);
-                M.chatname = ppl[0];
+                M.setChatname(ppl[0]);
                 Scene scene2 = new Scene(root2);
                 stage.setScene(scene2);
             });

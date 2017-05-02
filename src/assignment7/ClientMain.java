@@ -3,8 +3,6 @@ package assignment7;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Node;
-import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
@@ -16,16 +14,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
-import static assignment7.ClientController.chat_list;
-import static assignment7.ClientController.chatnames;
 
 public class ClientMain extends Application {
-	private static BufferedReader reader;
-	private static PrintWriter writer;
+	private BufferedReader reader;
+	private PrintWriter writer;
 	public static String user;
 	private String incoming;
 	private Stage stage;
@@ -43,7 +36,7 @@ public class ClientMain extends Application {
 				e.printStackTrace();
 			}
 			ClientController C = fxmlLoader.getController();
-			C.setStreams(ClientMain.reader, ClientMain.writer);
+			C.setStreams(reader, writer);
 			Scene scene = new Scene(root);
 			stage.setScene(scene);
 			writer.println("getchats");
@@ -72,12 +65,12 @@ public class ClientMain extends Application {
 				e.printStackTrace();
 			}
 			MessagesController M = loader2.getController();
-			M.setStreams(ClientMain.reader, ClientMain.writer);
-			//M.chatname = ((String) o);
+			M.setStreams(reader, writer);
+			M.setChatname(name);
 			Scene scene2 = new Scene(root2);
 			stage.setScene(scene2);
 			writer.println("getchathistory");
-			writer.println(M.chatname);
+			writer.println(name);
 			writer.println("END");
 			writer.flush();
 		}
@@ -90,7 +83,7 @@ public class ClientMain extends Application {
 	}
 
 	private void setUpNetworking() throws Exception {
-		Socket socket = new Socket("10.145.167.57", 12017); //IP, Port
+		Socket socket = new Socket("127.0.0.1", 12017); //IP, Port
 		InputStreamReader streamReader = new InputStreamReader(socket.getInputStream());
 		reader = new BufferedReader(streamReader);
 		writer = new PrintWriter(socket.getOutputStream());
@@ -123,7 +116,7 @@ public class ClientMain extends Application {
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("chatUILogin.fxml"));
 		Parent root = loader.load();
 		LoginController L = loader.getController();
-		L.setStreams(this.reader, this.writer);
+		L.setStreams(reader, writer);
 		Scene scene = new Scene(root);
 		primaryStage.setScene(scene);
 		primaryStage.setTitle("Chat Client");
@@ -151,41 +144,29 @@ public class ClientMain extends Application {
 					MessagesController.messages.add(tokens[i]);
 				i++;
 			}
-			if (MessagesController.messages.size() != 0)
-				MessagesController.message_list.setItems(MessagesController.messages);
 		}
 		else if (tokens[0].equals("getchats")){
 			int i = 1;
 			while (i < tokens.length) {
 				Text t = new Text(tokens[i]);
-				t.setOnMouseClicked((event) -> {
-					String s = t.getText();
-					updateScene2 x = new updateScene2(s);
-					Platform.runLater(x);
-				});
-				if (!chatnames.contains(t))
-					chatnames.add(t);
+				Boolean exists = false;
+				for(Text txt : ClientController.chatnames){
+					if(txt.getText().equals(tokens[i]))
+						exists = true;
+				}
+				if(!exists)
+					ClientController.chatnames.add(t);
 				i++;
 			}
-			if (ClientController.chatnames.size() != 0)
-				ClientController.chat_list.setItems(ClientController.chatnames);
 		}
-		else if (tokens[0].equals("newmsg")){
+		else if (tokens[0].equals("sendmsg")){
 			String mes = tokens[2] + ": " + tokens[3];
 			MessagesController.messages.add(mes);
-			MessagesController.message_list.setItems(MessagesController.messages);
-
 		}
 
 		else if (tokens[0].equals("newchat")){
-			MessagesController.name_text.setText(tokens[1]);
 			Text t = new Text(tokens[1]);
-			t.setOnMouseClicked((event) -> {
-				String s = t.getText();
-				updateScene2 x = new updateScene2(s);
-				Platform.runLater(x);
-			});
-			chatnames.add(t);
+			ClientController.chatnames.add(t);
 		}
 	}
 }

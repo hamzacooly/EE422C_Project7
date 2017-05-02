@@ -1,5 +1,7 @@
 package assignment7;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +14,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.BufferedReader;
@@ -27,22 +30,34 @@ public class MessagesController implements Initializable {
 
     private BufferedReader reader;
     private PrintWriter writer;
-    public String chatname;
-    public static ObservableList<String> messages;
+    private String chatname;
+    public static ObservableList<String> messages = FXCollections.observableArrayList();
 
     @FXML
     private Button back_butt;
     @FXML
-    public static TextArea name_text;
+    private TextArea name_text;
     @FXML
     private TextField msg_field;
     @FXML
     private Button send_butt;
     @FXML
-    public static ListView message_list;
+    private ListView<String> message_list;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    	
+    	message_list.setItems(messages);
+    	
+    	messages.addListener(new ListChangeListener<String>(){
+
+			@Override
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends String> c) {
+				// TODO Auto-generated method stub
+				message_list.setItems(messages);
+			}
+    		
+    	});
 
         //name_text.setBackground(Background.EMPTY);
 
@@ -90,6 +105,10 @@ public class MessagesController implements Initializable {
             C.setStreams(this.reader, this.writer);
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            writer.println("getchats");
+			writer.println(ClientMain.user);
+			writer.println("END");
+			writer.flush();
         });
 
     }
@@ -97,5 +116,10 @@ public class MessagesController implements Initializable {
     public void setStreams (BufferedReader br, PrintWriter pw){
         reader = br;
         writer = pw;
+    }
+    
+    public void setChatname(String c){
+    	chatname = c;
+    	name_text.setText(c);
     }
 }

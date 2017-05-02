@@ -45,6 +45,7 @@ public class LoginController implements Initializable {
             //sends user/pass to server
             String userString = username_text.getText();
             String passString = password_text.getText();
+            ClientMain.user = userString;
             //db makes new user
             writer.println("newuser");
             writer.println(userString);
