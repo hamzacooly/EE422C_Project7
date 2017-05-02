@@ -240,6 +240,7 @@ public class ServerMain{
 		else if(tokens[0].equals("getchathistory")){
 			String chat = tokens[1];
 			writer.println("getchathistory");
+			writer.println(tokens[1]);
 			for(Chat c : chats){
 				if(c.getName().equals(chat)){
 					Document d = chats_collection.find(eq("chat_name", chat)).first();

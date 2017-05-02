@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
@@ -34,7 +35,8 @@ public class MessagesController implements Initializable {
     private BufferedReader reader;
     private PrintWriter writer;
     private String chatname;
-    public static ObservableList<String> messages = FXCollections.observableArrayList();
+    public static ObservableList<ArrayList<String>> messages = FXCollections.observableArrayList();
+    private ObservableList<String> msgs = FXCollections.observableArrayList();
 
     @FXML
     private Button back_butt;
@@ -50,14 +52,23 @@ public class MessagesController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
     	
-    	message_list.setItems(messages);
+    	msgs.clear();
+    	for(ArrayList<String> m : MessagesController.messages){
+//    		if(m.get(0).equals(chatname))
+    			msgs.add(m.get(1));
+    	}
+    	message_list.setItems(msgs);
     	
-    	messages.addListener(new ListChangeListener<String>(){
-
+    	messages.addListener(new ListChangeListener<ArrayList<String>>(){
 			@Override
-			public void onChanged(javafx.collections.ListChangeListener.Change<? extends String> c) {
+			public void onChanged(javafx.collections.ListChangeListener.Change<? extends ArrayList<String>> arg0) {
 				// TODO Auto-generated method stub
-				message_list.setItems(messages);
+				msgs.clear();
+		    	for(ArrayList<String> m : messages){
+		    		if(m.get(0).equals(chatname))
+		    			msgs.add(m.get(1));
+		    	}
+		    	message_list.setItems(msgs);
 			}
     		
     	});
@@ -131,4 +142,5 @@ public class MessagesController implements Initializable {
     	chatname = c;
     	name_text.setText(c);
     }
+    
 }

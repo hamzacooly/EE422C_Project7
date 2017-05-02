@@ -7,13 +7,17 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.fxml.FXMLLoader;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 
 public class ClientMain extends Application {
@@ -138,11 +142,15 @@ public class ClientMain extends Application {
 			//Text t = L.getInvalidText().setText("Invalid login. Please try again.");
 		}
 		else if (tokens[0].equals("getchathistory")){
-			int i = 1;
+			int i = 2;
 			MessagesController.messages.clear();
 			while (i < tokens.length) {
-				if (!MessagesController.messages.contains(tokens[i]))
-					MessagesController.messages.add(tokens[i]);
+				if (!MessagesController.messages.contains(tokens[i])){
+					ArrayList<String> m = new ArrayList<>();
+					m.add(tokens[1]);
+					m.add(tokens[i]);
+					MessagesController.messages.add(m);
+				}
 				i++;
 			}
 		}
@@ -161,10 +169,19 @@ public class ClientMain extends Application {
 			}
 		}
 		else if (tokens[0].equals("sendmsg")){
-			String mes = tokens[2] + ": " + tokens[3];
+			ArrayList<String> m = new ArrayList<>();
+			m.add(tokens[1]);
+			String mes = tokens[2] + ":\t" + tokens[3];
+			m.add(mes);
+			if(!tokens[2].equals(user)){
+				String musicFile = "communication-channel.mp3";
+	        	Media sound = new Media(new File(musicFile).toURI().toString());
+	        	MediaPlayer mediaPlayer = new MediaPlayer(sound);
+	        	mediaPlayer.play();
+			}
 			Platform.runLater(new Runnable() {
 			    public void run() {
-			    	MessagesController.messages.add(mes);
+			    	MessagesController.messages.add(m);
 			    }
 			});
 		}
