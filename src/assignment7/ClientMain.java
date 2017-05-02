@@ -53,7 +53,14 @@ public class ClientMain extends Application {
 		}
 	};
 
-	Runnable updateScene2 = new Runnable() {
+	class updateScene2 implements Runnable {
+		String name;
+
+		public updateScene2(String s){
+			name = s;
+		}
+
+
 		@Override
 		public void run() {
 			//Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -144,20 +151,24 @@ public class ClientMain extends Application {
 					MessagesController.messages.add(tokens[i]);
 				i++;
 			}
-			MessagesController.message_list.setItems(MessagesController.messages);
+			if (MessagesController.messages.size() != 0)
+				MessagesController.message_list.setItems(MessagesController.messages);
 		}
 		else if (tokens[0].equals("getchats")){
 			int i = 1;
 			while (i < tokens.length) {
 				Text t = new Text(tokens[i]);
 				t.setOnMouseClicked((event) -> {
-					Platform.runLater(updateScene2);
+					String s = t.getText();
+					updateScene2 x = new updateScene2(s);
+					Platform.runLater(x);
 				});
 				if (!chatnames.contains(t))
 					chatnames.add(t);
 				i++;
 			}
-			ClientController.chat_list.setItems(ClientController.chatnames);
+			if (ClientController.chatnames.size() != 0)
+				ClientController.chat_list.setItems(ClientController.chatnames);
 		}
 		else if (tokens[0].equals("newmsg")){
 			String mes = tokens[2] + ": " + tokens[3];
@@ -170,7 +181,9 @@ public class ClientMain extends Application {
 			MessagesController.name_text.setText(tokens[1]);
 			Text t = new Text(tokens[1]);
 			t.setOnMouseClicked((event) -> {
-				Platform.runLater(updateScene2);
+				String s = t.getText();
+				updateScene2 x = new updateScene2(s);
+				Platform.runLater(x);
 			});
 			chatnames.add(t);
 		}
